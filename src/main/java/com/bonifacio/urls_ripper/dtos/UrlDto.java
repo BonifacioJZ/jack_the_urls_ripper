@@ -8,17 +8,18 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
 public class UrlDto {
     @Size(max = 150)
     private String name ;
     @Size(max = 500)
     private String description;
     private String url;
-    private LocalDateTime expirationDate;// optional
+    private String expirationDate;// optional
 
     @Override
     public String toString() {
