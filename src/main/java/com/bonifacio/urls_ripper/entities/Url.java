@@ -25,7 +25,7 @@ public class Url {
     @NotNull
     @NotEmpty
     @Size(max = 150)
-    @Column(columnDefinition = "varchar(250) default 'generic'")
+    @Column(columnDefinition = "varchar(250) default 'slug'")
     private String name;
     @Size(max = 500)
     @Column
