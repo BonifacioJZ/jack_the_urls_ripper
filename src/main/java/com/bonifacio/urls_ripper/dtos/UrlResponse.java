@@ -7,15 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class UrlResponse {
-    private String url;
-    private  String slug;
-    private LocalDateTime expirationDate;
 
+@Builder
+public record UrlResponse(
+        String url,
+        String slug,
+        LocalDateTime expirationDate
+) {
     @Override
     public String toString() {
         return "UrlResponse{" +

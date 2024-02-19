@@ -38,7 +38,7 @@ class UrlsServiceImplementTest {
                 .creationData(LocalDateTime.now())
                 .slug(encodeUrl("https://github.com/BonifacioJZ/bmr-app-java/blob/main/src/main/java/com/bonifacio/app/controllers/ProductController.java"))
                 .build();
-        url.setExpirationData(getExpirationData(urlDto.getExpirationDate(),url.getCreationData()));
+        url.setExpirationData(getExpirationData(urlDto.expirationDate(),url.getCreationData()));
 
     }
     private String encodeUrl(String url) {

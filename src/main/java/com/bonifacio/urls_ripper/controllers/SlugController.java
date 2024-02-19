@@ -50,8 +50,6 @@ public class SlugController {
                     .status(String.valueOf(HttpStatus.BAD_REQUEST))
                     .build(), HttpStatus.BAD_REQUEST);
         }
-        if (StringUtils.isEmpty(urlDto.getName()))
-            urlDto.setName("slug");
         var urlRes = _urlService.generateSlug(urlDto);
         if (urlRes == null) {
             return new ResponseEntity<>(UrlErrorResponseDto

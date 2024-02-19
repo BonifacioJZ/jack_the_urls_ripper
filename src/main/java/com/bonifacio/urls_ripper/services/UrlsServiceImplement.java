@@ -31,19 +31,19 @@ public class UrlsServiceImplement implements UrlService {
      */
     @Override
     public Url generateSlug(UrlDto urlDto) {
-        if (StringUtils.isEmpty(urlDto.getUrl())) {
+        if (StringUtils.isEmpty(urlDto.url())) {
             return null;
         }
-        String encodeUrl = encodeUrl(urlDto.getUrl());
+        String encodeUrl = encodeUrl(urlDto.url());
         Url urlPersistence = Url.builder()
-                .name(urlDto.getName())
-                .description(urlDto.getDescription())
-                .link(urlDto.getUrl())
+                .name(urlDto.name())
+                .description(urlDto.description())
+                .link(urlDto.url())
                 .slug(encodeUrl)
                 .creationData(LocalDateTime.now())
                 .build();
         urlPersistence
-                .setExpirationData(getExpirationData(urlDto.getExpirationDate(), urlPersistence.getCreationData()));
+                .setExpirationData(getExpirationData(urlDto.expirationDate(), urlPersistence.getCreationData()));
 
         if (StringUtils.isEmpty(encodeUrl))
             return null;

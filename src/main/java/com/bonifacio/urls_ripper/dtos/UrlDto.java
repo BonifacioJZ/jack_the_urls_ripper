@@ -4,28 +4,22 @@ import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Builder
-@Data
-public class UrlDto {
-    @Size(max = 150)
-    private String name ;
-    @Size(max = 500)
-    private String description;
-    @NotNull
-    @NotEmpty
-    @Lob
-    private String url;
-    private String expirationDate;// optional
+public record UrlDto(
+        @Size(max = 150)
+        String name,
+        @Size(max = 500)
+        String description,
+        @NotNull
+        @NotEmpty
+        @Lob
+        String url,
+        String expirationDate//optional
+) {
 
     @Override
     public String toString() {
