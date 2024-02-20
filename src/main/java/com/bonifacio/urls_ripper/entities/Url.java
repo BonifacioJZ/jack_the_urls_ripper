@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,21 +16,15 @@ import java.util.UUID;
 @Entity
 @Table(name = "urls")
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @NotNull
-    @NotEmpty
-    @Size(max = 150)
-    @Column(columnDefinition = "varchar(250) default 'slug'")
-    private String name;
-    @Size(max = 500)
-    @Column
-    private String description;
+
     @Lob
     @Column
     private String link;
@@ -40,16 +35,4 @@ public class Url {
     @Column(name="expiration_data")
     private LocalDateTime expirationData;
 
-    @Override
-    public String toString() {
-        return "Url{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", link='" + link + '\'' +
-                ", shortLink='" + slug + '\'' +
-                ", creationData=" + creationData +
-                ", expirationData=" + expirationData +
-                '}';
-    }
 }

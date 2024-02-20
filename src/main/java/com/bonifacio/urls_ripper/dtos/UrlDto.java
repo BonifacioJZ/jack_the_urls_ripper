@@ -10,10 +10,6 @@ import lombok.Builder;
 
 @Builder
 public record UrlDto(
-        @Size(max = 150)
-        String name,
-        @Size(max = 500)
-        String description,
         @NotNull
         @NotEmpty
         @Lob
@@ -21,13 +17,4 @@ public record UrlDto(
         String expirationDate//optional
 ) {
 
-    @Override
-    public String toString() {
-        return "UrlDto{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", url='" + url + '\'' +
-                ", expirationDate='" + expirationDate + '\'' +
-                '}';
-    }
 }

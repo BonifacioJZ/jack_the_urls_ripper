@@ -29,11 +29,9 @@ class UrlsServiceImplementTest {
     void setUp(){
         MockitoAnnotations.initMocks(this);
         urlDto = UrlDto.builder()
-                .name("slug")
                 .url("https://github.com/BonifacioJZ/bmr-app-java/blob/main/src/main/java/com/bonifacio/app/controllers/ProductController.java")
                 .build();
         url = Url.builder()
-                .name("slug")
                 .link("https://github.com/BonifacioJZ/bmr-app-java/blob/main/src/main/java/com/bonifacio/app/controllers/ProductController.java")
                 .creationData(LocalDateTime.now())
                 .slug(encodeUrl("https://github.com/BonifacioJZ/bmr-app-java/blob/main/src/main/java/com/bonifacio/app/controllers/ProductController.java"))
@@ -57,14 +55,9 @@ class UrlsServiceImplementTest {
     }
     @Test
     void generateSlug() {
-        var urlDtoe =UrlDto.builder()
-                .name("slug")
-                .url("https://github.com/BonifacioJZ/bmr-app-java/blob/main/src/main/java/com/bonifacio/app/controllers/ProductController.java")
-                .build();
-
-        var urlRes =_urlService.generateSlug(urlDtoe);
+        var urlRes =_urlService.generateSlug(urlDto);
         assertNotNull(urlRes);
-        assertEquals(urlRes.getName(),url.getName());
+        assertEquals(urlRes.getLink(),url.getLink());
 
     }
 
@@ -72,7 +65,6 @@ class UrlsServiceImplementTest {
     void persitenstUrl() {
         when(_urlRepository.save(any(Url.class))).thenReturn(url);
         var url2 =  Url.builder()
-                .name("slug")
                 .link("https://github.com/BonifacioJZ/bmr-app-java/blob/main/src/main/java/com/bonifacio/app/controllers/ProductController.java")
                 .creationData(LocalDateTime.now())
                 .slug(encodeUrl("https://github.com/BonifacioJZ/bmr-app-java/blob/main/src/main/java/com/bonifacio/app/controllers/ProductController.java"))
@@ -88,7 +80,7 @@ class UrlsServiceImplementTest {
         when(_urlRepository.findBySlug(any(String.class))).thenReturn(url);
         var result = _urlService.getEncodeUrl(url.getSlug());
         assertNotNull(result);
-        assertEquals(result.getName(),url.getName());
+        assertEquals(result.getLink(),url.getLink());
         assertEquals(result.getSlug(),url.getSlug());
     }
 

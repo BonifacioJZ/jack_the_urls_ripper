@@ -17,7 +17,7 @@ import static  org.springframework.security.web.util.matcher.AntPathRequestMatch
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecorityConfig {
+public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
     @Bean
@@ -27,6 +27,8 @@ public class SecorityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(antMatcher(HttpMethod.GET,"/**"))
+                        .permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.POST,"/api/auth/**"))
                         .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(httpSession->httpSession

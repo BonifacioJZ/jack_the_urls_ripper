@@ -36,8 +36,6 @@ public class UrlsServiceImplement implements UrlService {
         }
         String encodeUrl = encodeUrl(urlDto.url());
         Url urlPersistence = Url.builder()
-                .name(urlDto.name())
-                .description(urlDto.description())
                 .link(urlDto.url())
                 .slug(encodeUrl)
                 .creationData(LocalDateTime.now())
