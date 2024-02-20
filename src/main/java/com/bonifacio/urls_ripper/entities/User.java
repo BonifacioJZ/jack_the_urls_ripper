@@ -1,5 +1,6 @@
 package com.bonifacio.urls_ripper.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -45,6 +46,10 @@ public class User implements UserDetails {
     @Size(max = 150)
     @Column(name = "last_name")
     private String lastName;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name ="user_id")
+    private List<UserUrl> urls;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

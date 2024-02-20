@@ -1,8 +1,6 @@
 package com.bonifacio.urls_ripper.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,5 +23,8 @@ public class UserUrl extends Url{
     @Size(max = 500)
     @Column
     private String description;
+    @JoinColumn(name="user_id")
+    @ManyToOne(targetEntity = User.class)
+    private User user;
 
 }

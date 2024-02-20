@@ -28,6 +28,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(antMatcher(HttpMethod.GET,"/**"))
                         .permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.POST,"/"))
+                        .permitAll()
                         .requestMatchers(antMatcher(HttpMethod.POST,"/api/auth/**"))
                         .permitAll()
                         .anyRequest().authenticated())
