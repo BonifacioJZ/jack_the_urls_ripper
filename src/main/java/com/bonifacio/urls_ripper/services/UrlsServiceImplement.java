@@ -1,8 +1,12 @@
 package com.bonifacio.urls_ripper.services;
 
 import com.bonifacio.urls_ripper.dtos.UrlDto;
+import com.bonifacio.urls_ripper.dtos.UrlUserDto;
 import com.bonifacio.urls_ripper.entities.Url;
+import com.bonifacio.urls_ripper.entities.UserUrl;
 import com.bonifacio.urls_ripper.repositories.UrlRepository;
+import com.bonifacio.urls_ripper.repositories.UrlUserRepository;
+import com.bonifacio.urls_ripper.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -16,7 +20,9 @@ import static com.google.common.hash.Hashing.murmur3_32;
 @Component
 public class UrlsServiceImplement implements UrlService {
     private final UrlRepository _urlRepository;
-
+    private final JwtService _jwtService;
+    private final UrlUserRepository _urlUserRepository;
+    private final UserRepository _userRepository;
     /**
      * The `generateSlug` function takes a `UrlDto` object, encodes the URL, creates
      * a new `Url` object
@@ -47,6 +53,36 @@ public class UrlsServiceImplement implements UrlService {
             return null;
 
         return urlPersistence;
+    }
+
+    /**
+     * @param urlUserDto
+     * @param token
+     * @return
+     */
+    @Override
+    public UserUrl generateUserSlug(UrlUserDto urlUserDto, String token) {
+        if(StringUtils.isEmpty(token)|| StringUtils.isEmpty(urlUserDto.url())){
+            return null;
+        }
+        var username = _jwtService.getUsernameFromToken(token);
+        var user = _userRepository.findByUsername(username);
+        if(user.isEmpty()){
+            return null;
+        }
+        var slug = encodeUrl(urlUserDto.url());
+        if(StringUtils.isEmpty(slug))
+            return null;
+        var url = UserUrl
+                .builder()
+                .link(urlUserDto.url())
+                .slug(slug)
+                .user(user.get())
+                .description(urlUserDto.description())
+                .creationData(LocalDateTime.now())
+                .build();
+        url.setExpirationData(getExpirationData(urlUserDto.expirationDate(),url.getCreationData()));
+        return url;
     }
 
     /**
@@ -93,6 +129,15 @@ public class UrlsServiceImplement implements UrlService {
     public Url persitenstUrl(Url url) {
 
         return _urlRepository.save(url);
+    }
+
+    /**
+     * @param userUrl 
+     * @return
+     */
+    @Override
+    public UserUrl persitestUserUrl(UserUrl userUrl) {
+        return _urlUserRepository.save(userUrl);
     }
 
     @Override

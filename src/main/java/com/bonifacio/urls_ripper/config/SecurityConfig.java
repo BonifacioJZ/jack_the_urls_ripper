@@ -20,23 +20,27 @@ import static  org.springframework.security.web.util.matcher.AntPathRequestMatch
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-    throws Exception{
+    // The `securityFilterChain` method is responsible for configuring the security
+    // filters and rules
+    // for the application.
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req
-                        .requestMatchers(antMatcher(HttpMethod.GET,"/**"))
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/"))
                         .permitAll()
-                        .requestMatchers(antMatcher(HttpMethod.POST,"/"))
-                        .permitAll()
-                        .requestMatchers(antMatcher(HttpMethod.POST,"/api/auth/**"))
-                        .permitAll()
+                        .requestMatchers(antMatcher("/api/auth/**/")).permitAll()
+                        .requestMatchers(antMatcher("/swagger-ui/**/")).permitAll()
+                        .requestMatchers(antMatcher("/v3/api-docs/**")).permitAll()
                         .anyRequest().authenticated())
-                .sessionManagement(httpSession->httpSession
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(
+                        httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+
     }
 }

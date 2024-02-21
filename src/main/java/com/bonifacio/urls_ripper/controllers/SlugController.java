@@ -1,14 +1,13 @@
 package com.bonifacio.urls_ripper.controllers;
 
-import com.bonifacio.urls_ripper.dtos.UrlDto;
-import com.bonifacio.urls_ripper.dtos.UrlErrorResponseDto;
-import com.bonifacio.urls_ripper.dtos.UrlResponse;
+import com.bonifacio.urls_ripper.dtos.*;
 import com.bonifacio.urls_ripper.services.UrlService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -66,12 +65,11 @@ public class SlugController {
                 .expirationDate(urlRes.getExpirationData())
                 .build(), HttpStatus.CREATED);
     }
-
     /**
      * The function handles a GET request to retrieve a page based on a given slug,
      * and redirects the
      * user to the corresponding URL if it exists and is not expired.
-     * 
+     *
      * @param slug     The "slug" parameter is a string that represents a unique
      *                 identifier for a specific
      *                 page or resource. It is used to retrieve the corresponding
@@ -110,4 +108,33 @@ public class SlugController {
         response.sendRedirect(url.getLink());
         return null;
     }
+    @RequestMapping(value = "/userUrl/",method = RequestMethod.POST)
+    @Transactional
+    public ResponseEntity<?> urlUser(@RequestHeader(value = "Bearer") String token,
+                                     @Valid @RequestBody UrlUserDto urlUserDto,BindingResult result){
+        if(result.hasErrors()){
+            return new ResponseEntity<>(CustomResponse
+                    .builder()
+                    .message("Error to create slug")
+                    .success(false)
+                    .data(result.getFieldError()),HttpStatus.BAD_REQUEST);
+        }
+        var url = _urlService.generateUserSlug(urlUserDto,token);
+        if(url == null){
+            return new ResponseEntity<>(UrlErrorResponseDto
+                    .builder()
+                    .error("Error to creation slug")
+                    .status(String.valueOf(HttpStatus.BAD_REQUEST))
+                    .build(),HttpStatus.BAD_REQUEST);
+
+        }
+        _urlService.persitestUserUrl(url);
+        return new ResponseEntity<>(UrlResponse
+                .builder()
+                .url(url.getLink())
+                .slug(url.getSlug())
+                .expirationDate(url.getExpirationData())
+                .build(),HttpStatus.CREATED);
+    }
+
 }
