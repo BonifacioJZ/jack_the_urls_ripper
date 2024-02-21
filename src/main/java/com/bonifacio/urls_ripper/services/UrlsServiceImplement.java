@@ -76,6 +76,7 @@ public class UrlsServiceImplement implements UrlService {
         var url = UserUrl
                 .builder()
                 .link(urlUserDto.url())
+                .name(urlUserDto.name())
                 .slug(slug)
                 .user(user.get())
                 .description(urlUserDto.description())

@@ -110,8 +110,9 @@ public class SlugController {
     }
     @RequestMapping(value = "/userUrl/",method = RequestMethod.POST)
     @Transactional
-    public ResponseEntity<?> urlUser(@RequestHeader(value = "Bearer") String token,
+    public ResponseEntity<?> urlUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                      @Valid @RequestBody UrlUserDto urlUserDto,BindingResult result){
+
         if(result.hasErrors()){
             return new ResponseEntity<>(CustomResponse
                     .builder()
@@ -119,7 +120,9 @@ public class SlugController {
                     .success(false)
                     .data(result.getFieldError()),HttpStatus.BAD_REQUEST);
         }
-        var url = _urlService.generateUserSlug(urlUserDto,token);
+        System.out.println(urlUserDto);
+        var url = _urlService.generateUserSlug(urlUserDto,token.substring(7));
+
         if(url == null){
             return new ResponseEntity<>(UrlErrorResponseDto
                     .builder()

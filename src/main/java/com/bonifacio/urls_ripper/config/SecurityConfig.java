@@ -29,7 +29,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(antMatcher(HttpMethod.GET, "/"))
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/**/"))
                         .permitAll()
                         .requestMatchers(antMatcher("/api/auth/**/")).permitAll()
                         .requestMatchers(antMatcher("/swagger-ui/**/")).permitAll()
@@ -44,3 +44,4 @@ public class SecurityConfig {
 
     }
 }
+//TODO("Refactor autoritation urls")

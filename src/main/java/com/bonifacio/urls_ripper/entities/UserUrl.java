@@ -15,8 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 public class UserUrl extends Url{
-    @NotNull
-    @NotEmpty
+
     @Size(max = 150)
     @Column(columnDefinition = "varchar(250) default 'slug'")
     private String name;
