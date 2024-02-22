@@ -18,7 +18,7 @@ public class UserUrl extends Url{
 
     @Size(max = 150)
     @Column(columnDefinition = "varchar(250) default 'slug'")
-    private String name;
+    private String name="slug";
     @Size(max = 500)
     @Column
     private String description;
