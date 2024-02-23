@@ -2,6 +2,7 @@ package com.bonifacio.urls_ripper.controllers;
 
 import com.bonifacio.urls_ripper.dtos.*;
 import com.bonifacio.urls_ripper.services.UrlService;
+import com.bonifacio.urls_ripper.services.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -120,7 +122,6 @@ public class SlugController {
                     .success(false)
                     .data(result.getFieldError()),HttpStatus.BAD_REQUEST);
         }
-        System.out.println(urlUserDto);
         var url = _urlService.generateUserSlug(urlUserDto,token.substring(7));
 
         if(url == null){
@@ -138,6 +139,22 @@ public class SlugController {
                 .slug(url.getSlug())
                 .expirationDate(url.getExpirationData())
                 .build(),HttpStatus.CREATED);
+    }
+    @RequestMapping("/api/user/profile/urls/{id}/")
+    @Transactional
+    public ResponseEntity<?> getUrl(@PathVariable("id") UUID id){
+        var url = _urlService.getUserUrlById(id);
+        if(url == null) return new ResponseEntity<>(CustomResponse
+                .builder()
+                .message("The url is not found")
+                .success(true)
+                .data(null),HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(CustomResponse
+                .builder()
+                .success(true)
+                .message("url information")
+                .data(url)
+                .build(),HttpStatus.OK);
     }
 
 }

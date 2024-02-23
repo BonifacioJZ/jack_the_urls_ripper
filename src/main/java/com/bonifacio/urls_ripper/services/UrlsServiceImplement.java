@@ -2,6 +2,8 @@ package com.bonifacio.urls_ripper.services;
 
 import com.bonifacio.urls_ripper.dtos.UrlDto;
 import com.bonifacio.urls_ripper.dtos.UrlUserDto;
+import com.bonifacio.urls_ripper.dtos.UrlsDetails;
+import com.bonifacio.urls_ripper.dtos.UserDetails;
 import com.bonifacio.urls_ripper.entities.Url;
 import com.bonifacio.urls_ripper.entities.UserUrl;
 import com.bonifacio.urls_ripper.repositories.UrlRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static com.google.common.hash.Hashing.murmur3_32;
 
@@ -181,8 +184,34 @@ public class UrlsServiceImplement implements UrlService {
         return _urlRepository.findBySlug(url);
     }
 
+    /**
+     * @param id 
+     * @return
+     */
+    @Override
+    public UrlsDetails getUserUrlById(UUID id) {
+        var url = _urlUserRepository.findById(id);
+        return url.map(userUrl -> UrlsDetails
+                .builder()
+                .id(userUrl.getId())
+                .expirationDate(userUrl.getExpirationData())
+                .creationDate(userUrl.getCreationData())
+                .name(userUrl.getName())
+                .description(userUrl.getDescription())
+                .slug(userUrl.getSlug())
+                .link(userUrl.getLink())
+                .build()).orElse(null);
+    }
+
     @Override
     public void deleteSlug(Url url) {
-        _urlRepository.delete(url);
+        var res = _urlUserRepository.findById(url.getId());
+        if(res.isEmpty()) {
+            var resU = _urlRepository.findById(url.getId()).orElseThrow();
+            _urlRepository.delete(resU);
+
+        }else {
+            _urlUserRepository.delete(res.get());
+        }
     }
 }

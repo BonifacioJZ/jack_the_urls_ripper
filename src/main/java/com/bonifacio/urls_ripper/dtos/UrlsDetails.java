@@ -10,6 +10,7 @@ public record UrlsDetails(
         String name,
         String description,
         String link,
+        String slug,
         LocalDateTime expirationDate,
         LocalDateTime creationDate
 ) {

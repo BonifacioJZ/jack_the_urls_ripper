@@ -4,6 +4,7 @@ import com.bonifacio.urls_ripper.dtos.UrlsDetails;
 import com.bonifacio.urls_ripper.dtos.UserDetails;
 import com.bonifacio.urls_ripper.repositories.UserRepository;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class UserServiceImplements implements UserService{
     private UserRepository _userRepository;
+    private JwtService _jwtService;
     /**
      * @param username 
      * @return
@@ -27,6 +29,7 @@ public class UserServiceImplements implements UserService{
                         url.getName(),
                         url.getDescription(),
                         url.getLink(),
+                        url.getSlug(),
                         url.getExpirationData(),
                         url.getCreationData()
                         )));
@@ -40,4 +43,42 @@ public class UserServiceImplements implements UserService{
                 .username(user.get().getUsername())
                 .build();
     }
+
+    /**
+     * @param token
+     * @return
+     */
+    @Override
+    public UserDetails findUserByToken(String token) {
+        if(StringUtils.isEmpty(token)){
+            return null;
+        }
+        var username = _jwtService.getUsernameFromToken(token);
+        if(StringUtils.isEmpty(username)){
+            return null;
+        }
+        var user = _userRepository.findByUsername(username).orElseThrow();
+        ArrayList<UrlsDetails> urls = new ArrayList<>();
+        user.getUrls().forEach(url->
+                urls.add(new UrlsDetails(
+                        url.getId(),
+                        url.getName(),
+                        url.getDescription(),
+                        url.getLink(),
+                        url.getSlug(),
+                        url.getExpirationData(),
+                        url.getCreationData()
+                )));
+
+        return UserDetails
+                .builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .email(user.getEmail())
+                .lastName(user.getLastName())
+                .urls(urls)
+                .username(username)
+                .build();
+    }
+
 }

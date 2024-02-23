@@ -4,9 +4,11 @@ import com.bonifacio.urls_ripper.dtos.CustomResponse;
 import com.bonifacio.urls_ripper.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,5 +34,23 @@ public class UserController {
                 .message("User")
                 .build(),HttpStatus.OK);
 
+    }
+    @RequestMapping(value = "profile/")
+    @Transactional
+    public ResponseEntity<?> profile(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearer){
+        var user = _userService.findUserByToken(bearer.substring(7));
+        if(user == null){
+            return new ResponseEntity<>(CustomResponse
+                    .builder()
+                    .success(false)
+                    .message("Error to get user for token")
+                    .data(null),HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(CustomResponse
+                .builder()
+                .success(true)
+                .message("user information")
+                .data(user)
+                .build(),HttpStatus.OK);
     }
 }
