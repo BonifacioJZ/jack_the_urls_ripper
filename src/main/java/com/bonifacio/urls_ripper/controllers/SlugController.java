@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -140,9 +141,9 @@ public class SlugController {
                 .expirationDate(url.getExpirationData())
                 .build(),HttpStatus.CREATED);
     }
-    @RequestMapping("/api/user/profile/urls/{id}/")
+    @RequestMapping("/api/user/profile/urls/{slug}/")
     @Transactional
-    public ResponseEntity<?> getUrl(@PathVariable("id") UUID id){
+    public ResponseEntity<?> getUrl(@PathVariable("slug") String id){
         var url = _urlService.getUserUrlById(id);
         if(url == null) return new ResponseEntity<>(CustomResponse
                 .builder()
@@ -155,6 +156,56 @@ public class SlugController {
                 .message("url information")
                 .data(url)
                 .build(),HttpStatus.OK);
+    }
+    @RequestMapping(value = "/api/user/profile/urls/{slug}/edit/",method = RequestMethod.PUT)
+    @Transactional
+    public ResponseEntity<?> editUrl(@PathVariable("slug") String slug,
+                                     @Valid @RequestBody UrlUserDto userDto,
+                                     BindingResult result){
+        if(result.hasErrors()) return new ResponseEntity<>(
+                CustomResponse.builder()
+                        .success(false)
+                        .message("error to update")
+                        .data(result.getFieldError()),
+                HttpStatus.BAD_REQUEST
+        );
+        var url = _urlService.updateUserUrl(slug,userDto);
+        if (url == null){
+            return new ResponseEntity<>(CustomResponse
+                    .builder()
+                    .message("Error to save")
+                    .success(false)
+                    .data(null), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(CustomResponse
+                .builder()
+                .success(true)
+                .message("Updated")
+                .data(url),HttpStatus.OK);
+    }
+    @RequestMapping("api/user/profile/urls/{slug}/delete/")
+    public ResponseEntity<?> deleteUrl(@PathVariable("slug") String slug){
+        try {
+            var url= _urlService.getEncodeUrl(slug);
+            if(url == null){
+                return new ResponseEntity<>(CustomResponse
+                        .builder()
+                        .message("Error to encode")
+                        .data(null)
+                        .success(false),HttpStatus.BAD_REQUEST);
+            }
+            _urlService.deleteSlug(url);
+            return new ResponseEntity<>(CustomResponse
+                    .builder()
+                    .success(true)
+                    .message("Deleted")
+                    .data(null),HttpStatus.OK);
+        }catch (Exception e ){
+            return new ResponseEntity<>(CustomResponse.builder()
+                    .success(false)
+                    .message("Error to save")
+                    .data(e),HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

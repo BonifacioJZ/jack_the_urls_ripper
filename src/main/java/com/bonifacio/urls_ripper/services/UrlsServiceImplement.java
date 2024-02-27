@@ -189,8 +189,8 @@ public class UrlsServiceImplement implements UrlService {
      * @return
      */
     @Override
-    public UrlsDetails getUserUrlById(UUID id) {
-        var url = _urlUserRepository.findById(id);
+    public UrlsDetails getUserUrlById(String id) {
+        var url = _urlUserRepository.findBySlug(id);
         return url.map(userUrl -> UrlsDetails
                 .builder()
                 .id(userUrl.getId())
@@ -213,5 +213,30 @@ public class UrlsServiceImplement implements UrlService {
         }else {
             _urlUserRepository.delete(res.get());
         }
+    }
+
+    /**
+     * @param id 
+     * @return
+     */
+    @Override
+    public UrlsDetails updateUserUrl(String slug,UrlUserDto userDto) {
+        var oldUrl = _urlUserRepository.findBySlug(slug);
+        if(oldUrl.isEmpty()){
+            return null;
+        }
+        oldUrl.get().setName(userDto.name());
+        oldUrl.get().setDescription(userDto.description());
+        oldUrl.get().setExpirationData(getExpirationData(userDto.expirationDate(),oldUrl.get().getExpirationData()));
+        _urlUserRepository.save(oldUrl.get());
+        return oldUrl.map(ulr->UrlsDetails
+                .builder()
+                .id(ulr.getId())
+                .creationDate(ulr.getCreationData())
+                .expirationDate(ulr.getExpirationData())
+                .link(ulr.getLink())
+                .description(ulr.getDescription())
+                .slug(ulr.getSlug())
+                .build()).orElseThrow();
     }
 }

@@ -14,6 +14,7 @@ public interface UrlService {
     public Url persitenstUrl(Url url);
     public UserUrl persitestUserUrl(UserUrl userUrl);
     public Url getEncodeUrl(String url);
-    public UrlsDetails getUserUrlById(UUID id);
+    public UrlsDetails getUserUrlById(String id);
     public void deleteSlug(Url url);
+    public UrlsDetails updateUserUrl(String id,UrlUserDto userDto);
 }
