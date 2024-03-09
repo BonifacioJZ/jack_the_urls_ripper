@@ -2,9 +2,12 @@ package com.bonifacio.urls_ripper.services;
 
 import com.bonifacio.urls_ripper.dtos.UrlsDetails;
 import com.bonifacio.urls_ripper.dtos.UserDetails;
+import com.bonifacio.urls_ripper.mappers.UrlMapper;
+import com.bonifacio.urls_ripper.mappers.UserMapper;
 import com.bonifacio.urls_ripper.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,8 +15,14 @@ import java.util.ArrayList;
 @Component
 @AllArgsConstructor
 public class UserServiceImplements implements UserService{
+    @Autowired
     private UserRepository _userRepository;
+    @Autowired
     private JwtService _jwtService;
+    @Autowired
+    private final UrlMapper _urlMapper;
+    @Autowired
+    private final UserMapper _userMapper;
     /**
      * @param username 
      * @return
@@ -24,24 +33,9 @@ public class UserServiceImplements implements UserService{
         if( user.isEmpty()) return null;
         ArrayList<UrlsDetails> urls = new ArrayList<>();
         user.get().getUrls().forEach(url->
-                urls.add(new UrlsDetails(
-                        url.getId(),
-                        url.getName(),
-                        url.getDescription(),
-                        url.getLink(),
-                        url.getSlug(),
-                        url.getExpirationData(),
-                        url.getCreationData()
-                        )));
-
-        return UserDetails.builder()
-                .id(user.get().getId())
-                .email(user.get().getEmail())
-                .urls(urls)
-                .firstName(user.get().getFirstName())
-                .lastName(user.get().getLastName())
-                .username(user.get().getUsername())
-                .build();
+                urls.add(_urlMapper.userUrlToUserDetails(url))
+        );
+        return _userMapper.userToUserDetails(user,urls);
     }
 
     /**
@@ -60,25 +54,11 @@ public class UserServiceImplements implements UserService{
         var user = _userRepository.findByUsername(username).orElseThrow();
         ArrayList<UrlsDetails> urls = new ArrayList<>();
         user.getUrls().forEach(url->
-                urls.add(new UrlsDetails(
-                        url.getId(),
-                        url.getName(),
-                        url.getDescription(),
-                        url.getLink(),
-                        url.getSlug(),
-                        url.getExpirationData(),
-                        url.getCreationData()
-                )));
+                urls.add(
+                        _urlMapper.userUrlToUserDetails(url)
+                ));
 
-        return UserDetails
-                .builder()
-                .id(user.getId())
-                .firstName(user.getFirstName())
-                .email(user.getEmail())
-                .lastName(user.getLastName())
-                .urls(urls)
-                .username(username)
-                .build();
+        return _userMapper.userToUserDetails(user,urls);
     }
 
 }
