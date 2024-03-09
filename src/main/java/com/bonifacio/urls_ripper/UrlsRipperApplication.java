@@ -9,7 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@SecurityScheme(name = "Jack The Url Ripper",scheme = "bearer",type = SecuritySchemeType.HTTP,in = SecuritySchemeIn.HEADER)
+@SecurityScheme(name = "Jack The Url Ripper",scheme = "Bearer",type = SecuritySchemeType.HTTP,in = SecuritySchemeIn.HEADER)
 @OpenAPIDefinition(info = @Info(title = "Jack The Url Ripper", version = "0.1",description = "Short Url App"))
 public class UrlsRipperApplication {
 

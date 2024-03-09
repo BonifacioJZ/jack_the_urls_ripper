@@ -48,7 +48,7 @@ public class SlugController {
      * @return The method is returning a ResponseEntity object.
      */
     @RequestMapping(method = RequestMethod.POST, value = "")
-    @Operation(summary = "Creation simple Short Url")
+    @Operation(summary = "Creation simple Short Url",description = "This function handles the creation of a slug for a given UR")
     public ResponseEntity<?> createSlug(@Valid @RequestBody UrlDto urlDto, BindingResult result) {
         if (result.hasErrors()) {
             return new ResponseEntity<>(UrlErrorResponseDto
@@ -96,7 +96,7 @@ public class SlugController {
     @RequestMapping(method = RequestMethod.GET, value = "{slug}")
     @Transactional
     @Tag(name = "Get Url")
-    @Operation(summary = "find the url with slug and redirect to page that url")
+    @Operation(summary = "find the url with slug and redirect to page that url",description = "The function handles a GET request to retrieve a page based on a given slug")
     public ResponseEntity<?> getPage(@PathVariable String slug, HttpServletResponse response) throws IOException {
         var url = _urlService.getEncodeUrl(slug);
         if (url == null) {
@@ -118,9 +118,8 @@ public class SlugController {
         response.sendRedirect(url.getLink());
         return null;
     }
-    @RequestMapping(value = "/userUrl/",method = RequestMethod.POST)
+    @RequestMapping(value = "/user_url/",method = RequestMethod.POST)
     @Transactional
-    @SecurityRequirements()
     public ResponseEntity<?> urlUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                      @Valid @RequestBody UrlUserDto urlUserDto,BindingResult result){
 

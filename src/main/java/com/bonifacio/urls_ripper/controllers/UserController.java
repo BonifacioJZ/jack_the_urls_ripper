@@ -8,10 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("api/user/")
 @RestController
@@ -19,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "User Controller")
 public class UserController {
     private UserService _userService;
-    @RequestMapping(value = "{username}/")
+    @RequestMapping(value = "{username}/",method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<?> getUser(@PathVariable("username") String username){
         var user = _userService.findUser(username);
@@ -37,7 +34,7 @@ public class UserController {
                 .build(),HttpStatus.OK);
 
     }
-    @RequestMapping(value = "profile/")
+    @RequestMapping(value = "profile/",method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<?> profile(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearer){
         var user = _userService.findUserByToken(bearer.substring(7));

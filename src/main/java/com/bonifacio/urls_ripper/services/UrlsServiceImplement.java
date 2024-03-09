@@ -34,6 +34,7 @@ public class UrlsServiceImplement implements UrlService {
     private  final UrlEncode _urlEncode;
     @Autowired
     private final UrlMapper _urlMapper;
+    @Autowired
     private final DateCal _dateCal;
     /**
      * The `generateSlug` function takes a `UrlDto` object, encodes the URL, creates
@@ -104,6 +105,7 @@ public class UrlsServiceImplement implements UrlService {
         if (StringUtils.isEmpty(slug))
             return null;
         var url = _urlMapper.urlUserDtoToUserUrl(urlUserDto);
+        url.setSlug(slug);
         url.setUser(user.get());
         url.setExpirationData(_dateCal.getExpirationData(urlUserDto.expirationDate(), url.getCreationData()));
         return url;
@@ -151,16 +153,7 @@ public class UrlsServiceImplement implements UrlService {
     @Override
     public UrlsDetails getUserUrlById(String id) {
         var url = _urlUserRepository.findBySlug(id);
-        return url.map(userUrl -> UrlsDetails
-                .builder()
-                .id(userUrl.getId())
-                .expirationDate(userUrl.getExpirationData())
-                .creationDate(userUrl.getCreationData())
-                .name(userUrl.getName())
-                .description(userUrl.getDescription())
-                .slug(userUrl.getSlug())
-                .link(userUrl.getLink())
-                .build()).orElse(null);
+        return _urlMapper.userUrlToUserDetails(url);
     }
 
     @Override
@@ -189,14 +182,6 @@ public class UrlsServiceImplement implements UrlService {
         oldUrl.get().setDescription(userDto.description());
         oldUrl.get().setExpirationData(_dateCal.getExpirationData(userDto.expirationDate(),oldUrl.get().getExpirationData()));
         _urlUserRepository.save(oldUrl.get());
-        return oldUrl.map(ulr->UrlsDetails
-                .builder()
-                .id(ulr.getId())
-                .creationDate(ulr.getCreationData())
-                .expirationDate(ulr.getExpirationData())
-                .link(ulr.getLink())
-                .description(ulr.getDescription())
-                .slug(ulr.getSlug())
-                .build()).orElseThrow();
+        return _urlMapper.userUrlToUserDetails(oldUrl);
     }
 }
