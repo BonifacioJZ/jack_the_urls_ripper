@@ -3,30 +3,38 @@ package com.bonifacio.urls_ripper.services;
 import com.bonifacio.urls_ripper.dtos.UrlDto;
 import com.bonifacio.urls_ripper.dtos.UrlUserDto;
 import com.bonifacio.urls_ripper.dtos.UrlsDetails;
-import com.bonifacio.urls_ripper.dtos.UserDetails;
+import com.bonifacio.urls_ripper.encode.UrlEncode;
 import com.bonifacio.urls_ripper.entities.Url;
 import com.bonifacio.urls_ripper.entities.UserUrl;
+import com.bonifacio.urls_ripper.mappers.UrlMapper;
 import com.bonifacio.urls_ripper.repositories.UrlRepository;
 import com.bonifacio.urls_ripper.repositories.UrlUserRepository;
 import com.bonifacio.urls_ripper.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import static com.google.common.hash.Hashing.murmur3_32;
 
 @AllArgsConstructor
 @Component
 public class UrlsServiceImplement implements UrlService {
+    @Autowired
     private final UrlRepository _urlRepository;
+    @Autowired
     private final JwtService _jwtService;
+    @Autowired
     private final UrlUserRepository _urlUserRepository;
+    @Autowired
     private final UserRepository _userRepository;
-
+    @Autowired
+    private  final UrlEncode _urlEncode;
+    @Autowired
+    private final UrlMapper _urlMapper;
+    private final DateCal _dateCal;
     /**
      * The `generateSlug` function takes a `UrlDto` object, encodes the URL, creates
      * a new `Url` object
@@ -44,15 +52,11 @@ public class UrlsServiceImplement implements UrlService {
         if (StringUtils.isEmpty(urlDto.url())) {
             return null;
         }
-        String encodeUrl = encodeUrl(urlDto.url());
-        Url urlPersistence = Url.builder()
-                .link(urlDto.url())
-                .slug(encodeUrl)
-                .creationData(LocalDateTime.now())
-                .build();
+        String encodeUrl = _urlEncode.urlEncode(urlDto.url());
+        Url urlPersistence = _urlMapper.urlDtoToUrl(urlDto);
         urlPersistence
-                .setExpirationData(getExpirationData(urlDto.expirationDate(), urlPersistence.getCreationData()));
-
+                .setExpirationData(_dateCal.getExpirationData(urlDto.expirationDate(), urlPersistence.getCreationData()));
+        urlPersistence.setSlug(encodeUrl);
         if (StringUtils.isEmpty(encodeUrl))
             return null;
 
@@ -96,61 +100,16 @@ public class UrlsServiceImplement implements UrlService {
         if (user.isEmpty()) {
             return null;
         }
-        var slug = encodeUrl(urlUserDto.url());
+        var slug = _urlEncode.urlEncode(urlUserDto.url());
         if (StringUtils.isEmpty(slug))
             return null;
-        var url = UserUrl
-                .builder()
-                .link(urlUserDto.url())
-                .name(urlUserDto.name())
-                .slug(slug)
-                .user(user.get())
-                .description(urlUserDto.description())
-                .creationData(LocalDateTime.now())
-                .build();
-        url.setExpirationData(getExpirationData(urlUserDto.expirationDate(), url.getCreationData()));
+        var url = _urlMapper.urlUserDtoToUserUrl(urlUserDto);
+        url.setUser(user.get());
+        url.setExpirationData(_dateCal.getExpirationData(urlUserDto.expirationDate(), url.getCreationData()));
         return url;
     }
 
-    /**
-     * The function returns the expiration date as a LocalDateTime object, either by
-     * parsing the
-     * provided expiration date string or by adding one hour to the creation date if
-     * the expiration
-     * date is blank.
-     * 
-     * @param expirationDate A string representing the expiration date in the format
-     *                       "yyyy-MM-dd
-     *                       HH:mm:ss".
-     * @param creationData   The creationData parameter is a LocalDateTime object
-     *                       representing the date
-     *                       and time of creation.
-     * @return The method is returning a LocalDateTime object.
-     */
-    private LocalDateTime getExpirationData(String expirationDate, LocalDateTime creationData) {
-        if (StringUtils.isBlank(expirationDate)) {
-            return creationData.plusHours(1);
-        }
-        return LocalDateTime.parse(expirationDate);
-    }
 
-    /**
-     * The function takes a URL and encodes it using the Murmur3_32 hashing
-     * algorithm along with the
-     * current timestamp.
-     * 
-     * @param url The `url` parameter is a string representing the URL that you want
-     *            to encode.
-     * @return The method is returning the encoded URL as a string.
-     */
-    private String encodeUrl(String url) {
-        String encodeUrl = "";
-        LocalDateTime time = LocalDateTime.now();
-        encodeUrl = murmur3_32()
-                .hashString(url.concat(time.toString()), StandardCharsets.UTF_8)
-                .toString();
-        return encodeUrl;
-    }
 
     @Override
     public Url persitenstUrl(Url url) {
@@ -164,6 +123,7 @@ public class UrlsServiceImplement implements UrlService {
      */
     @Override
     public UserUrl persitestUserUrl(UserUrl userUrl) {
+
         return _urlUserRepository.save(userUrl);
     }
 
@@ -216,7 +176,7 @@ public class UrlsServiceImplement implements UrlService {
     }
 
     /**
-     * @param id 
+     * @param slug
      * @return
      */
     @Override
@@ -227,7 +187,7 @@ public class UrlsServiceImplement implements UrlService {
         }
         oldUrl.get().setName(userDto.name());
         oldUrl.get().setDescription(userDto.description());
-        oldUrl.get().setExpirationData(getExpirationData(userDto.expirationDate(),oldUrl.get().getExpirationData()));
+        oldUrl.get().setExpirationData(_dateCal.getExpirationData(userDto.expirationDate(),oldUrl.get().getExpirationData()));
         _urlUserRepository.save(oldUrl.get());
         return oldUrl.map(ulr->UrlsDetails
                 .builder()

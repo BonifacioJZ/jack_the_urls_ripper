@@ -2,6 +2,7 @@ package com.bonifacio.urls_ripper.controllers;
 
 import com.bonifacio.urls_ripper.dtos.CustomResponse;
 import com.bonifacio.urls_ripper.services.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/user/")
 @RestController
 @AllArgsConstructor
+@Tag(name = "User Controller")
 public class UserController {
     private UserService _userService;
     @RequestMapping(value = "{username}/")

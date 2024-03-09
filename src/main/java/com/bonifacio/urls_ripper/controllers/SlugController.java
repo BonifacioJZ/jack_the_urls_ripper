@@ -3,6 +3,9 @@ package com.bonifacio.urls_ripper.controllers;
 import com.bonifacio.urls_ripper.dtos.*;
 import com.bonifacio.urls_ripper.services.UrlService;
 import com.bonifacio.urls_ripper.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -23,6 +26,7 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
+@Tag(name = "Url Controller")
 public class SlugController {
     private final UrlService _urlService;
 
@@ -44,6 +48,7 @@ public class SlugController {
      * @return The method is returning a ResponseEntity object.
      */
     @RequestMapping(method = RequestMethod.POST, value = "")
+    @Operation(summary = "Creation simple Short Url")
     public ResponseEntity<?> createSlug(@Valid @RequestBody UrlDto urlDto, BindingResult result) {
         if (result.hasErrors()) {
             return new ResponseEntity<>(UrlErrorResponseDto
@@ -90,6 +95,8 @@ public class SlugController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "{slug}")
     @Transactional
+    @Tag(name = "Get Url")
+    @Operation(summary = "find the url with slug and redirect to page that url")
     public ResponseEntity<?> getPage(@PathVariable String slug, HttpServletResponse response) throws IOException {
         var url = _urlService.getEncodeUrl(slug);
         if (url == null) {
@@ -113,6 +120,7 @@ public class SlugController {
     }
     @RequestMapping(value = "/userUrl/",method = RequestMethod.POST)
     @Transactional
+    @SecurityRequirements()
     public ResponseEntity<?> urlUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                      @Valid @RequestBody UrlUserDto urlUserDto,BindingResult result){
 
@@ -141,7 +149,7 @@ public class SlugController {
                 .expirationDate(url.getExpirationData())
                 .build(),HttpStatus.CREATED);
     }
-    @RequestMapping("/api/user/profile/urls/{slug}/")
+    @RequestMapping(value = "/api/user/profile/urls/{slug}/", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<?> getUrl(@PathVariable("slug") String id){
         var url = _urlService.getUserUrlById(id);
@@ -183,7 +191,7 @@ public class SlugController {
                 .message("Updated")
                 .data(url),HttpStatus.OK);
     }
-    @RequestMapping("api/user/profile/urls/{slug}/delete/")
+    @RequestMapping(value = "api/user/profile/urls/{slug}/delete/",method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteUrl(@PathVariable("slug") String slug){
         try {
             var url= _urlService.getEncodeUrl(slug);
