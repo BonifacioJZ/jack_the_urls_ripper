@@ -10,21 +10,20 @@ import static com.google.common.hash.Hashing.murmur3_32;
 @Component
 public class UrlEncodeImplements implements UrlEncode {
     /**
-     * The function takes a URL and encodes it using the Murmur3_32 hashing
-     * algorithm along with the
-     * current timestamp.
-     *
-     * @param url The `url` parameter is a string representing the URL that you want
-     *            to encode.
-     * @return The method is returning the encoded URL as a string.
+     * Encodes a URL string using Murmur3_32 hashing algorithm.
+     * The encoding includes concatenating the URL string with the current timestamp
+     * before hashing to provide uniqueness.
+     * @param url The URL string to be encoded.
+     * @return The encoded URL string.
      */
     @Override
     public String urlEncode(String url) {
-        String encodeUrl = "";
-        LocalDateTime time = LocalDateTime.now();
+        String encodeUrl = ""; // Initialize the encoded URL string
+        LocalDateTime time = LocalDateTime.now(); // Get the current timestamp
+        // Concatenate the URL string with the current timestamp and hash using Murmur3_32
         encodeUrl = murmur3_32()
                 .hashString(url.concat(time.toString()), StandardCharsets.UTF_8)
                 .toString();
-        return encodeUrl;
+        return encodeUrl; // Return the encoded URL string
     }
 }
