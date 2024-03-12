@@ -112,7 +112,12 @@ public class UrlsServiceImplement implements UrlService {
     }
 
 
-
+    /**
+     * Persists a URL object in the database.
+     * Saves the provided URL object using the URL repository.
+     * @param url The URL object to be persisted.
+     * @return The persisted URL object.
+     */
     @Override
     public Url persitenstUrl(Url url) {
 
@@ -120,8 +125,10 @@ public class UrlsServiceImplement implements UrlService {
     }
 
     /**
-     * @param userUrl
-     * @return
+     * Persists a UserUrl object in the database.
+     * Saves the provided UserUrl object using the UserUrl repository.
+     * @param userUrl The UserUrl object to be persisted.
+     * @return The persisted UserUrl object.
      */
     @Override
     public UserUrl persitestUserUrl(UserUrl userUrl) {
@@ -147,41 +154,75 @@ public class UrlsServiceImplement implements UrlService {
     }
 
     /**
-     * @param id 
-     * @return
+     * Retrieves URL details by its slug from the database.
+     * Searches for a URL in the UserUrl repository by its slug.
+     * Converts the found UserUrl object to UrlsDetails using the UrlMapper.
+     * @param id The slug of the URL to be retrieved.
+     * @return The URL details corresponding to the provided slug.
      */
     @Override
     public UrlsDetails getUserUrlById(String id) {
+        // Retrieve UserUrl object from the repository by its slug
         var url = _urlUserRepository.findBySlug(id);
+        // Convert the found UserUrl object to UrlsDetails using the UrlMapper
         return _urlMapper.userUrlToUserDetails(url);
     }
 
-    @Override
-    public void deleteSlug(Url url) {
-        var res = _urlUserRepository.findById(url.getId());
-        if(res.isEmpty()) {
-            var resU = _urlRepository.findById(url.getId()).orElseThrow();
-            _urlRepository.delete(resU);
-
-        }else {
-            _urlUserRepository.delete(res.get());
-        }
-    }
 
     /**
-     * @param slug
-     * @return
+     * Deletes a URL by its ID from the appropriate repository.
+     * Searches for a URL by its ID in both the UserUrl repository and the Url repository.
+     * If the URL is found in the UserUrl repository, it is deleted from there.
+     * Otherwise, it is deleted from the Url repository.
+     * @param url The URL object to be deleted.
      */
     @Override
-    public UrlsDetails updateUserUrl(String slug,UrlUserDto userDto) {
-        var oldUrl = _urlUserRepository.findBySlug(slug);
-        if(oldUrl.isEmpty()){
-            return null;
+    public void deleteSlug(Url url) {
+        // Search for the URL by its ID in the UserUrl repository
+        var userUrlOptional = _urlUserRepository.findById(url.getId());
+        if (userUrlOptional.isPresent()) { // Check if the URL exists in the UserUrl repository
+            _urlUserRepository.delete(userUrlOptional.get()); // Delete the URL from the UserUrl repository
+        } else { // If the URL is not found in the UserUrl repository
+            var urlOptional = _urlRepository.findById(url.getId())
+                    .orElseThrow(); // Retrieve the URL from the Url repository
+            _urlRepository.delete(urlOptional); // Delete the URL from the Url repository
         }
-        oldUrl.get().setName(userDto.name());
-        oldUrl.get().setDescription(userDto.description());
-        oldUrl.get().setExpirationData(_dateCal.getExpirationData(userDto.expirationDate(),oldUrl.get().getExpirationData()));
-        _urlUserRepository.save(oldUrl.get());
+    }
+
+
+    /**
+     * Updates the details of a user URL.
+     * Retrieves the user URL by its slug from the UserUrl repository.
+     * If the user URL is found, updates its details with the provided data.
+     * Saves the updated user URL to the repository and returns the updated details.
+     * If the user URL is not found, returns null.
+     * @param slug The slug of the user URL to be updated.
+     * @param userDto The data to update the user URL with.
+     * @return The updated user URL details if found, otherwise null.
+     */
+    @Override
+    public UrlsDetails updateUserUrl(String slug, UrlUserDto userDto) {
+        // Retrieve the user URL by its slug from the UserUrl repository
+        var oldUrlOptional = _urlUserRepository.findBySlug(slug);
+
+        // Check if the user URL exists
+        if (oldUrlOptional.isEmpty()) {
+            return null; // Return null if the user URL is not found
+        }
+
+        // Get the user URL object
+        UserUrl oldUrl = oldUrlOptional.get();
+
+        // Update the user URL details with the provided data
+        oldUrl.setName(userDto.name());
+        oldUrl.setDescription(userDto.description());
+        oldUrl.setExpirationData(_dateCal.getExpirationData(userDto.expirationDate(), oldUrl.getExpirationData()));
+
+        // Save the updated user URL to the repository
+        _urlUserRepository.save(oldUrl);
+
+        // Convert the updated user URL object to UrlsDetails using the UrlMapper and return
         return _urlMapper.userUrlToUserDetails(oldUrl);
     }
+
 }

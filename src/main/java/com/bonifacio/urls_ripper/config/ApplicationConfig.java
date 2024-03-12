@@ -17,18 +17,38 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
     private final UserRepository userRepository;
+    /**
+     * Creates an AuthenticationManager bean.
+     * The `authenticationManager` bean is responsible for authenticating users.
+     * Retrieves the AuthenticationManager from the provided AuthenticationConfiguration.
+     * @param config The AuthenticationConfiguration used to retrieve the AuthenticationManager.
+     * @return The AuthenticationManager bean configured with the provided AuthenticationConfiguration.
+     * @throws Exception If an error occurs while retrieving the AuthenticationManager.
+     */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+    /**
+     * Creates an AuthenticationProvider bean.
+     * The `authenticationProvider` bean is responsible for providing authentication services.
+     * Creates a DaoAuthenticationProvider and configures it with the password encoder and user details service.
+     * @return The AuthenticationProvider bean configured with the password encoder and user details service.
+     */
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
+        // Create a DaoAuthenticationProvider
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+
+        // Configure the DaoAuthenticationProvider with the password encoder and user details service
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userDetailsService());
+
+        // Return the configured AuthenticationProvider bean
         return daoAuthenticationProvider;
     }
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
