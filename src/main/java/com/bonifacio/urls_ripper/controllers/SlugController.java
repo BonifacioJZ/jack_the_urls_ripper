@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
