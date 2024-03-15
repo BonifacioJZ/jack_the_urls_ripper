@@ -102,7 +102,7 @@ public class SlugController {
      *         object. The specific
      *         type of the response entity depends on the conditions in the code.
      */
-    @RequestMapping(method = RequestMethod.GET, value = "{slug}")
+    @RequestMapping(method = RequestMethod.GET, value = "get/{slug}/")
     @Transactional
     @Operation(
             summary = "Get Page by Slug",
@@ -163,7 +163,7 @@ public class SlugController {
                      - Body: CustomResponse indicating the error""",
             content = @Content(schema = @Schema(implementation = UrlErrorResponseDto.class)))
     })
-    public ResponseEntity<?> urlUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+    public ResponseEntity<?> urlUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearer,
                                      @Valid @RequestBody UrlUserDto urlUserDto, BindingResult result) {
         // Validate the URL data provided in the request body using UrlUserDto
         if (result.hasErrors()) {
@@ -175,7 +175,7 @@ public class SlugController {
         }
 
         // Generate a user-specific URL slug using the UrlService and the authentication token
-        var url = _urlService.generateUserSlug(urlUserDto, token.substring(7));
+        var url = _urlService.generateUserSlug(urlUserDto, bearer.substring(7));
 
         // Check if the slug creation fails
         if (url == null) {
@@ -252,6 +252,16 @@ public class SlugController {
      * @return A ResponseEntity indicating the result of the edit operation.
      */
     @RequestMapping(value = "/api/user/profile/urls/{slug}/edit/", method = RequestMethod.PUT)
+    @Operation(summary = "Update User URL",description = "Updates the details of a user-specific URL.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = """
+                    The URL details were successfully updated.
+                      - Body: CustomResponse indicating a successful update.""",
+            content = @Content(schema = @Schema(implementation = UrlsDetails.class))),
+            @ApiResponse(responseCode = "400",description = """
+                    Error occurred during validation or updating of the URL details.
+                      - Body: CustomResponse indicating the error.""")
+    })
     @Transactional
     public ResponseEntity<?> editUrl(@PathVariable("slug") String slug,
                                      @Valid @RequestBody UrlUserDto userDto,

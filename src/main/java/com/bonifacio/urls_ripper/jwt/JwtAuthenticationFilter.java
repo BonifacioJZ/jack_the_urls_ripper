@@ -85,6 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+
     /**
      * The function extracts a token from the Authorization header of an HTTP
      * request.
