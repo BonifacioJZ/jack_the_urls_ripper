@@ -57,20 +57,29 @@ public class SecurityConfig {
                 .bearerFormat("JWT")
                 .scheme("bearer");
     }
+    /**
+     * Configures the OpenAPI documentation for the application.
+     *
+     * @return An instance of OpenAPI containing security requirements, components, and general information about the API.
+     */
     @Bean
-    public OpenAPI openAPI(){
-        return new OpenAPI().addSecurityItem(new SecurityRequirement()
-                .addList("Bearer Authentication"))
-                .components(new Components().addSecuritySchemes
-                        ("Bearer Authentication",createAPIKeyScheme()))
-                .info(new Info().title("Jack The URLS Ripper")
-                        .description("App to create Short Links")
-                        .version("1.0").contact(new Contact().name("Bonifacio Juarez Ceja")
-                                .email("bonijuarezceja96@outlook.com"))
-                        .license(new License().name("License MIT")
-                                .url("https://github.com/BonifacioJZ/jack_the_urls_ripper/tree/main?tab=MIT-1-ov-file")));
-
-
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                // Adds a security requirement for Bearer Authentication
+                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
+                // Adds security schemes for Bearer Authentication
+                .components(new Components().addSecuritySchemes("Bearer Authentication", createAPIKeyScheme()))
+                // Provides general information about the application
+                .info(new Info()
+                        .title("Jack The URLS Ripper") // Title of the application
+                        .description("App to create Short Links") // Description of the application
+                        .version("1.0") // Version of the application
+                        .contact(new Contact()
+                                .name("Bonifacio Juarez Ceja") // Name of the contact person
+                                .email("bonijuarezceja96@outlook.com")) // Email of the contact person
+                        .license(new License()
+                                .name("License MIT") // Name of the license
+                                .url("https://github.com/BonifacioJZ/jack_the_urls_ripper/tree/main?tab=MIT-1-ov-file"))); // URL of the license
     }
+
 }
-//TODO("Refactor autoritation urls")
