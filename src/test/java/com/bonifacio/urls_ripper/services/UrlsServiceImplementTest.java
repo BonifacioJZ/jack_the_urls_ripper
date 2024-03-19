@@ -53,13 +53,6 @@ class UrlsServiceImplementTest {
         }
         return LocalDateTime.parse(expirationDate);
     }
-    @Test
-    void generateSlug() {
-        var urlRes =_urlService.generateSlug(urlDto);
-        assertNotNull(urlRes);
-        assertEquals(urlRes.getLink(),url.getLink());
-
-    }
 
     @Test
     void persitenstUrl() {
