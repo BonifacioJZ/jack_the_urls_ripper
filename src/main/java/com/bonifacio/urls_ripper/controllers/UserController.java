@@ -70,7 +70,7 @@ public class UserController {
             return new ResponseEntity<>(CustomResponse.builder()
                     .success(false)
                     .message("Error to get user for token")
-                    .data(null), HttpStatus.NOT_FOUND);
+                    .data(null).build(), HttpStatus.NOT_FOUND);
         }
 
         // Return a ResponseEntity with a CustomResponse containing the user information, a success message, and HTTP status 200

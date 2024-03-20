@@ -229,7 +229,7 @@ public class SlugController {
             return new ResponseEntity<>(CustomResponse.builder()
                     .message("The url is not found")
                     .success(true)
-                    .data(null), HttpStatus.NOT_FOUND);
+                    .data(null).build(), HttpStatus.NOT_FOUND);
         }
 
         // Return a ResponseEntity with a CustomResponse containing the URL information, a success message, and HTTP status 200
@@ -287,14 +287,14 @@ public class SlugController {
             return new ResponseEntity<>(CustomResponse.builder()
                     .message("Error to save")
                     .success(false)
-                    .data(null), HttpStatus.BAD_REQUEST);
+                    .data(null).build(), HttpStatus.BAD_REQUEST);
         }
 
         // Return a ResponseEntity with a CustomResponse indicating a successful update and HTTP status 200
         return new ResponseEntity<>(CustomResponse.builder()
                 .success(true)
                 .message("Updated")
-                .data(url), HttpStatus.OK);
+                .data(url).build(), HttpStatus.OK);
     }
 
     /**
@@ -332,7 +332,7 @@ public class SlugController {
                 return new ResponseEntity<>(CustomResponse.builder()
                         .message("Error to encode")
                         .data(null)
-                        .success(false), HttpStatus.BAD_REQUEST);
+                        .success(false).build(), HttpStatus.BAD_REQUEST);
             }
 
             // Delete the URL using the UrlService
@@ -342,13 +342,13 @@ public class SlugController {
             return new ResponseEntity<>(CustomResponse.builder()
                     .success(true)
                     .message("Deleted")
-                    .data(null), HttpStatus.OK);
+                    .data(null).build(), HttpStatus.OK);
         } catch (Exception e) {
             // Return a ResponseEntity with a CustomResponse indicating an error to save and HTTP status 400
             return new ResponseEntity<>(CustomResponse.builder()
                     .success(false)
                     .message("Error to save")
-                    .data(e), HttpStatus.BAD_REQUEST);
+                    .data(e).build(), HttpStatus.BAD_REQUEST);
         }
     }
 

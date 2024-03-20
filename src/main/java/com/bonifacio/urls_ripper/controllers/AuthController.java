@@ -43,7 +43,7 @@ public class AuthController {
             return new ResponseEntity<>(CustomResponse.builder()
                     .message("Error to login")
                     .data(result.getFieldError())
-                    .success(false), HttpStatus.BAD_REQUEST);
+                    .success(false).build(), HttpStatus.BAD_REQUEST);
         }
         var token = authService.login(loginDto);
         return new ResponseEntity<>(CustomResponse
