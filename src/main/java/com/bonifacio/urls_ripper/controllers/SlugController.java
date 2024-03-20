@@ -102,7 +102,7 @@ public class SlugController {
      *         object. The specific
      *         type of the response entity depends on the conditions in the code.
      */
-    @RequestMapping(method = RequestMethod.GET, value = "get/{slug}/")
+    @RequestMapping(method = RequestMethod.GET, value = {"get/{slug}/","get/{slug}"})
     @Transactional
     @Operation(
             summary = "Get Page by Slug",
@@ -136,6 +136,7 @@ public class SlugController {
         response.sendRedirect(url.getLink());
         return null;
     }
+
     /**
      * Creates a user-specific URL.
      * Maps to the POST request method for the "/user_url/" endpoint.

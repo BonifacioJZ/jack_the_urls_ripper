@@ -36,7 +36,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(antMatcher( "/get/**/"))
+                        .requestMatchers(antMatcher( "/get/**"))
                         .permitAll()
                         .requestMatchers(antMatcher(HttpMethod.POST,"/"))
                         .permitAll()
