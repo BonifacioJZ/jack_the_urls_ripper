@@ -40,7 +40,7 @@ public class JwtService {
                 .setClaims(extraClaims) // Sets additional claims provided in the map
                 .setSubject(user.getUsername()) // Sets the subject of the token as the username of the user
                 .setIssuedAt(new Date(System.currentTimeMillis())) // Sets the token's issued time to the current time
-                .setExpiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24)) // Sets token expiration time to 24 hours from now
+                .setExpiration(new Date(System.currentTimeMillis() + 100000L * 60 * 2400)) // Sets token expiration time to 24 hours from now
                 .signWith(getKey(), SignatureAlgorithm.HS256) // Signs the token using the specified key and algorithm
                 .compact(); // Builds and compact the token
     }
