@@ -106,7 +106,7 @@ public class SlugController {
     @Transactional
     @Operation(
             summary = "Get Page by Slug",
-            description = "Retrieves a URL by its slug and redirects the user to that URL.")
+            description = "Retrieves a URL by its slug and redirects the user to that URLS.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = """
                     The user is redirected to the retrieved URL."""),
