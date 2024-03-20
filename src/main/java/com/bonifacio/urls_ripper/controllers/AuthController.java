@@ -71,7 +71,8 @@ public class AuthController {
                     .builder()
                     .success(false)
                     .message("Error to register")
-                    .data(result.getFieldError()),HttpStatus.BAD_REQUEST);
+                    .data(result.getFieldError())
+                    .build(),HttpStatus.BAD_REQUEST);
         }
         var token = authService.register(registerDto);
         return new ResponseEntity<>(CustomResponse

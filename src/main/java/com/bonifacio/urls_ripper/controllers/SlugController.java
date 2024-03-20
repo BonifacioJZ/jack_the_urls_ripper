@@ -273,7 +273,8 @@ public class SlugController {
             return new ResponseEntity<>(CustomResponse.builder()
                     .success(false)
                     .message("error to update")
-                    .data(result.getFieldError()),
+                    .data(result.getFieldError())
+                    .build(),
                     HttpStatus.BAD_REQUEST);
         }
 
